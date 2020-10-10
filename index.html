@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Minesweeper</title>
+        <!--Boilerplate-->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="index.css">
+    </head>
+    <body>
+        <form action="minesweeper.html" action="post">
+            <label for="minesweeperHeight">Number of spots on up-down:</label>
+            <input type="text" name="minesweeperHeight" id="minesweeperHeight">
+            <br/>
+            <label for="minesweeperWidth">Number of spots on left-right:</label>
+            <input type="text" name="minesweeperWidth" id="minesweeperWidth">
+            <br/>
+            <select name="difficultySelect" id="difficultyDropdown">
+                <option value=0>Easy (10 bombs)</option>
+                <option value=1>Medium (40 bombs)</option>
+                <option value=2>Hard (99 bombs)</option>
+                <option value=3>Glorified Russian Roulette (50% of tiles are bombs)</option>
+            </select>
+            <input type="submit" value="Begin">
+        </form>
+    </body>
+</html>
