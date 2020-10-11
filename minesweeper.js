@@ -1,5 +1,3 @@
-//TODO: Clean this shit up
-
 //TODO: get user input via POST
 //TODO: scale button size based on specified grid size
 const buttonSize = 30;
@@ -83,7 +81,7 @@ function setNumberSquareVisible(squareX, squareY)
 
     if (bombsFound > 0)
     {
-        element.text("".concat(bombsFound));
+        element.append("<p>".concat(bombsFound, "</p>"));
     }
 }
 
@@ -106,9 +104,10 @@ function clearBombsDebug()
     {
         let element = getLocationElement(x.x, x.y);
 
-        if (element.text() != "B")
+        if (!element.hasClass("bomb"))//(element.text() != "B")
         {
             element.text("");
+            element.empty();
         }
     }
 }
@@ -258,7 +257,9 @@ function buttonClicked(buttonX, buttonY)
         if (getLocationHasBomb(buttonX, buttonY))
         {
             element.addClass("bomb");
-            element.text("B");
+            element.addClass("revealedButton");
+            element.append("<img src='bomb.png' alt='B'>");
+            console.log("image loaded");
             gameRunning = false;
             //game over man
             return;
@@ -272,17 +273,10 @@ function buttonClicked(buttonX, buttonY)
 
         setNumberSquareVisible(buttonX, buttonY);
 
-        if (bombsFound > 0)
+        if (bombsFound == 0)
         {
-            element.text("".concat(bombsFound));
-        }
-        else
-        {
-            //TODO: Reveal all surrounding 0 tiles
-            console.log("Initial reveal around point");
             let toRevealAround = revealSquaresAroundPoint(buttonX, buttonY);
 
-            console.log("Entering reveal around loop");
             while (toRevealAround.length > 0)
             {
                 for (square of toRevealAround)
@@ -313,7 +307,7 @@ function onRightClick(buttonX, buttonY)
         let element = getLocationElement(buttonX, buttonY);
         element.addClass("revealedButton");
         element.addClass("flag");
-        element.text("F");
+        element.append("<img src='flag.png' alt='F'>");
     }
     return false;
 }
