@@ -7,7 +7,7 @@ var settings = {
     height: 20,
     width: 20,
     //0 = easy, 1 = medium, etc.
-    difficulty: 0
+    difficulty: 2
 };
 //List of objects with coords that determine where the bombs are
 var minesweeperGrid = [];
@@ -41,9 +41,9 @@ function searchForBombs(centreX, centreY)
 {
     let bombsFound = 0;
 
-    for (i = -1; i <= 1; i++)
+    for (let i = -1; i <= 1; i++)
     {
-        for (i2 = -1; i2 <= 1; i2++)
+        for (let i2 = -1; i2 <= 1; i2++)
         {
             if (i == 0 && i2 == 0)
             {
@@ -51,12 +51,15 @@ function searchForBombs(centreX, centreY)
             }
             else
             {
-                if ((centreX + i) <= settings.width - 1 &&
-                    (centreX + i) >= 0 &&
-                    (centreY + i2) <= settings.height - 1 &&
-                    (centreY + i2) >= 0)
+                let currX = centreX + i;
+                let currY = centreY + i2;
+
+                if (currX <= settings.width - 1 &&
+                    currX >= 0 &&
+                    currY <= settings.height - 1 &&
+                    currY >= 0)
                 {
-                    if (getLocationHasBomb(centreX + i, centreY + i2))
+                    if (getLocationHasBomb(currX, currY))
                     {
                         bombsFound++;
                     }
@@ -70,8 +73,9 @@ function searchForBombs(centreX, centreY)
 
 //---Setters---
 
-function setNumberSquareVisible(squareX, squareY, element)
+function setNumberSquareVisible(squareX, squareY)
 {
+    let element = getLocationElement(squareX, squareY);
     element.addClass("revealedButton");
     element.addClass("rNumberSquare");
 
@@ -83,33 +87,43 @@ function setNumberSquareVisible(squareX, squareY, element)
     }
 }
 
+function showBombsDebug()
+{
+    for (x of minesweeperGrid)
+    {
+        let element = getLocationElement(x.x, x.y);
+
+        if (element.text() != "B")
+        {
+            element.text("DB");
+        }
+    }
+}
+
+function clearBombsDebug()
+{
+    for (x of minesweeperGrid)
+    {
+        let element = getLocationElement(x.x, x.y);
+
+        if (element.text() != "B")
+        {
+            element.text("");
+        }
+    }
+}
+
 function toggleDebugMode()
 {
     debug = !debug;
 
     if (debug)
     {
-        for (x of minesweeperGrid)
-        {
-            let element = getLocationElement(x.x, x.y);
-
-            if (element.text() != "B")
-            {
-                element.text("DB");
-            }
-        }
+        showBombsDebug();   
     }
     else
     {
-        for (x of minesweeperGrid)
-        {
-            let element = getLocationElement(x.x, x.y);
-
-            if (element.text() != "B")
-            {
-                element.text("");
-            }
-        }
+        clearBombsDebug();
     }
 }
 
@@ -121,43 +135,39 @@ function reset()
     generateButtons();
     populateField();
     gameRunning = true;
+
+    if (debug)
+    {
+        showBombsDebug();
+    }
 }
 
 //returns an array of coordinate objects (has x and y) denoting where the 0 bomb squares were
 //remember to check if a revealed square is outside of the grid
 function revealSquaresAroundPoint(pointX, pointY)
 {
-    console.log("DEBUG: pointX: ".concat(pointX, " pointY: ", pointY));
     //we are assuming this is a 0 square
     let zeroSquares = [];
 
-    for (i = -1; i <= 1; i++)
+    for (let i = -1; i <= 1; i++)
     {
-        for (i2 = -1; i2 <= 1; i2++)
+        for (let i2 = -1; i2 <= 1; i2++)
         {
-            console.log("DEBUG: i: ".concat(i, " i2: ", i2));
-            if (i == 0 && i2 == 0)
+            if (!(i == 0 && i2 == 0))
             {
-                console.log("continued");
-                continue;
-            }
-            else
-            {
-                if ((pointX + i) <= settings.width - 1 &&
-                    (pointX + i) >= 0 &&
-                    (pointY + i2) <= settings.height - 1 &&
-                    (pointY + i2) >= 0)
+                let currX = pointX + i;
+                let currY = pointY + i2;
+
+                if (currX <= (settings.width - 1) &&
+                    currX >= 0 &&
+                    currY <= (settings.height - 1) &&
+                    currY >= 0)
                 {
-                    let currX = pointX + i;
-                    let currY = pointY + i2;
-
-                    console.log("DEBUG: currX: ".concat(currX, " currY: ", currY));
-
-                    let element = getLocationElement(currX, currY)
+                    let element = getLocationElement(currX, currY);
 
                     if (!element.hasClass("revealedButton"))
                     {
-                        setNumberSquareVisible(currX, currY, element);
+                        setNumberSquareVisible(currX, currY);
 
                         if (searchForBombs(currX, currY) == 0)
                         {
@@ -171,9 +181,7 @@ function revealSquaresAroundPoint(pointX, pointY)
             }
         }
     }
-
-    console.log("DEBUG: exited");
-
+    
     return zeroSquares;
 }
 
@@ -262,7 +270,7 @@ function buttonClicked(buttonX, buttonY)
         //Populate tiles with the appropriate number
         element.addClass("rNumberSquare");
 
-        setNumberSquareVisible(buttonX, buttonY, element);
+        setNumberSquareVisible(buttonX, buttonY);
 
         if (bombsFound > 0)
         {
@@ -279,7 +287,13 @@ function buttonClicked(buttonX, buttonY)
             {
                 for (square of toRevealAround)
                 {
-                    toRevealAround.push(revealSquaresAroundPoint(square.x, square.y));
+                    let zeroSquares = revealSquaresAroundPoint(square.x, square.y);
+
+                    for (zeroSquare of zeroSquares)
+                    {
+                        toRevealAround.push(zeroSquare);
+                    }
+
                     toRevealAround = toRevealAround.filter(function(obj) { return obj.x != square.x || obj.y != square.y; });
                 }
             }
