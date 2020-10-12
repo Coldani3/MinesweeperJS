@@ -27,9 +27,6 @@
     color: blue;
 }
 
-.button:active {
-}
-
 #grid {
     box-sizing: border-box;
     border-style: solid;

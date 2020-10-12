@@ -1,12 +1,16 @@
 //TODO: get user input via POST
 //TODO: scale button size based on specified grid size
 const buttonSize = 30;
+var started = false;
+
 var settings = {
     height: 20,
     width: 20,
     //0 = easy, 1 = medium, etc.
-    difficulty: 2
+    difficulty: 0
 };
+
+var hasPopulated = false;
 //List of objects with coords that determine where the bombs are
 var minesweeperGrid = [];
 //Add objects with x and y vars to this, x and y specifying the square with a flag
@@ -69,6 +73,15 @@ function searchForBombs(centreX, centreY)
     return bombsFound;
 }
 
+function checkIfAllNonBombTilesFound()
+{
+    //assuming this is after a button press
+    let revealedCount = $(".revealedButton").length + $(".flag").length;
+    let maxCount = (settings.width * settings.height) - minesweeperGrid.length;
+
+    return revealedCount == maxCount;
+}
+
 //---Setters---
 
 function setNumberSquareVisible(squareX, squareY)
@@ -91,7 +104,7 @@ function showBombsDebug()
     {
         let element = getLocationElement(x.x, x.y);
 
-        if (element.text() != "B")
+        if (!element.hasClass("bomb"))
         {
             element.text("DB");
         }
@@ -104,7 +117,7 @@ function clearBombsDebug()
     {
         let element = getLocationElement(x.x, x.y);
 
-        if (!element.hasClass("bomb"))//(element.text() != "B")
+        if (!element.hasClass("bomb"))
         {
             element.text("");
             element.empty();
@@ -114,30 +127,37 @@ function clearBombsDebug()
 
 function toggleDebugMode()
 {
-    debug = !debug;
+    if (started)
+    {
+        debug = !debug;
 
-    if (debug)
-    {
-        showBombsDebug();   
-    }
-    else
-    {
-        clearBombsDebug();
+        if (debug)
+        {
+            showBombsDebug();   
+        }
+        else
+        {
+            clearBombsDebug();
+        }
     }
 }
 
 function reset()
 {
-    minesweeperGrid = []
-    flaggedSquares = []
-    $("#grid").empty();
-    generateButtons();
-    populateField();
-    gameRunning = true;
-
-    if (debug)
+    if (started)
     {
-        showBombsDebug();
+        minesweeperGrid = []
+        flaggedSquares = []
+        $("#grid").empty();
+        hasPopulated = false;
+        //generateButtons();
+        populateField();
+        gameRunning = true;
+
+        if (debug)
+        {
+            showBombsDebug();
+        }
     }
 }
 
@@ -201,29 +221,46 @@ function generateButtons()
     }   
 }
 
-function populateField()
+function populateField(clickedX = -1, clickedY = -1)
 {
     //decide where the bombs are
     let bombCount = 0;
+    let customBombCountElement = $("#customBombCount");
 
-    switch (settings.difficulty)
+    if (!customBombCountElement.text() == "")
     {
-        default:
-            //default to easy
-        case 0:
-            bombCount = 10;
-            break;
-        case 1:
-            bombCount = 40;
-            break;
+        switch (settings.difficulty)
+        {
+            default:
+                //default to easy
+            case 0:
+                bombCount = 10;
+                settings.width = 9;
+                settings.height = 9;
+                break;
 
-        case 2:
-            bombCount = 99;
-            break;
-        
-        case 3:
-            bombCount = (settings.height * settings.width) / 2;
-            break;
+            case 1:
+                bombCount = 40;
+                settings.width = 16;
+                settings.height = 16;
+                break;
+
+            case 2:
+                bombCount = 99;
+                settings.width = 30;
+                settings.height = 16;
+                break;
+            
+            case 3:
+                settings.width = 16;
+                settings.height = 16;
+                bombCount = (settings.height * settings.width) / 2;
+                break;
+        }
+    }
+    else
+    {
+        bombCount = customBombCountElement.text();
     }
 
     for (i = 0; i < bombCount; i++)
@@ -231,7 +268,7 @@ function populateField()
         let bombX = Math.floor(Math.random() * settings.width);
         let bombY = Math.floor(Math.random() * settings.height);
 
-        if (!getLocationHasBomb(bombX, bombY))
+        if (!getLocationHasBomb(bombX, bombY) && ((bombX != clickedX && bombY != clickedY) || settings.difficulty == 3))
         {
             minesweeperGrid.push({
                 x: bombX,
@@ -252,6 +289,11 @@ function buttonClicked(buttonX, buttonY)
     console.log("press");
     if (gameRunning)
     {
+        if (!hasPopulated)
+        {
+            populateField(buttonX, buttonY);
+        }
+
         let element = getLocationElement(buttonX, buttonY);
 
         if (getLocationHasBomb(buttonX, buttonY))
@@ -292,6 +334,11 @@ function buttonClicked(buttonX, buttonY)
                 }
             }
         }
+
+        if (checkIfAllNonBombTilesFound())
+        {
+            //game win
+        }
     }
 }
 
@@ -313,15 +360,29 @@ function onRightClick(buttonX, buttonY)
 }
 
 
-
-//Make the border of the game scale to fit the game area
-$("#grid").width(buttonSize * settings.width);
-$("#grid").height(buttonSize * settings.height);
-
-if (!debugEnabled)
+function start()
 {
-    $("#debugButton").remove();
+    let selectElement = document.getElementById("difficultyDropdown");
+
+    if (selectElement.selectedIndex > -1)
+    {
+        let selectedDifficulty = selectElement.options[selectElement.selectedIndex].value;
+
+        settings.difficulty = selectedDifficulty;
+
+        //Make the border of the game scale to fit the game area
+        $("#grid").width(buttonSize * settings.width);
+        $("#grid").height(buttonSize * settings.height);
+
+        if (!debugEnabled)
+        {
+            $("#debugButton").remove();
+        }
+
+        generateButtons();
+        //populateField();
+
+        started = true;
+    }
 }
 
-generateButtons();
-populateField();
