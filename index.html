@@ -35,9 +35,22 @@
             </div>
 
             <div id="game">
-                <div id="grid"></div>
-                <button id="debugButton" onclick="toggleDebugMode()"></button>
-                <button style="padding-left:10px;" onclick="reset()">Reset</button>
+                <table>
+                    <tr>
+                        <td>
+                            <div id="grid"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div id="resetButton">
+                                <button onclick="reset()">Reset</button>
+                                <br/>
+                                <button id="debugButton" onclick="toggleDebugMode()"></button>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
                 
             </div>
             

@@ -92,9 +92,9 @@ function checkIfAllNonBombTilesFound()
 {
     //assuming this is after a button press
     let revealedCount = $(".revealedButton").length + $(".flag").length;
-    let maxCount = (settings.width * settings.height) - minesweeperGrid.length;
+    let maxCount = (settings.width * settings.height) - settings.bombCount;
 
-    return revealedCount == maxCount;
+    return revealedCount >= maxCount;
 }
 
 //---Setters---
@@ -102,6 +102,7 @@ function checkIfAllNonBombTilesFound()
 function setNumberSquareVisible(squareX, squareY)
 {
     let element = getLocationElement(squareX, squareY);
+    element.empty();
     element.addClass("revealedButton");
     element.addClass("rNumberSquare");
 
@@ -332,6 +333,12 @@ function onButtonClick(buttonX, buttonY)
 {
     let element = getLocationElement(buttonX, buttonY);
 
+    if (element.hasClass("flag"))
+    {
+        element.removeClass("flag");
+        element.empty();
+    }
+
     if (!element.hasClass("revealedButton"))
     {
         if (getLocationHasBomb(buttonX, buttonY))
@@ -341,6 +348,7 @@ function onButtonClick(buttonX, buttonY)
             element.append("<img src='bomb.png' alt='B'>");
             gameRunning = false;
             //game over man
+            setTimeout(function() {if (!gameRunning) reset()}, 4000);
             return;
         }
 
@@ -376,6 +384,8 @@ function onButtonClick(buttonX, buttonY)
         {
             //game win
             console.log("win");
+            gameRunning = false;
+            setTimeout(function() { if (!gameRunning) reset()}, 4000);
         }
     }
 }
@@ -383,7 +393,6 @@ function onButtonClick(buttonX, buttonY)
 function displayFlag(buttonX, buttonY)
 {
     let element = getLocationElement(buttonX, buttonY);
-    element.addClass("revealedButton");
     element.addClass("flag");
     element.append("<img src='flag.png' alt='F'>");
 }
@@ -397,7 +406,14 @@ function onRightClick(buttonX, buttonY)
             y: buttonY,
         });
 
-        displayFlag(buttonX, buttonY);
+        if (!debug)
+        {
+            displayFlag(buttonX, buttonY);
+        }
+        else
+        {
+            getLocationElement(buttonX, buttonY).addClass("flag");
+        }
     }
     return false;
 }
@@ -422,12 +438,11 @@ function start()
                 $("#debugButton").remove();
             }
 
-            $("#game").css("display", "block");
+            $("#game").css("display", "flex");
 
             generateButtons();
             $("#grid").width(buttonSize * settings.width);
             $("#grid").height(buttonSize * settings.height);
-            //populateField();
 
             started = true;
         }

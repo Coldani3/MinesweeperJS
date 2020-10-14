@@ -60,6 +60,26 @@ body {
     border-width: 1px;
     border-color: black;
     background-color: white;
-    height: 510px;
+    height: 520px;
     display: none;
+    justify-content: center;
+    align-items: center;
+}
+
+#resetButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.nightmodeMainBackground {
+    background-color: #000;
+}
+
+.nightmodeBackground {
+    background-color: #021D36;
+}
+
+.nightmodeText {
+    color: white;
 }
