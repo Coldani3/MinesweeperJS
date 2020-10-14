@@ -32,8 +32,34 @@
     border-style: solid;
     border-width: 1px;
     border-color: black;
+    margin-bottom: 5px;
 }
 
 body {
-    margin:0px;
+    background-color: gainsboro;
+    /*height: 100%;
+    width: 100%;*/
+}
+
+#options {
+    margin-top: 10px;
+    margin-left: 10px;
+    margin-bottom: 20px;
+    padding: 10px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: black;
+    background-color: white;
+}
+
+#game {
+    margin-left: 10px;
+    padding-top: 5px;
+    padding-left: 10px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: black;
+    background-color: white;
+    height: 510px;
+    display: none;
 }

@@ -7,25 +7,42 @@
         <link rel="stylesheet" type="text/css" href="minesweeper.css">
     </head>
     <body>
-        <div>
-            <label for="difficultyDropdown">Select Difficulty:</label>
-            <select name="difficultySelect" id="difficultyDropdown">
-                <option value=0>Easy (10 bombs)</option>
-                <option value=1>Medium (40 bombs)</option>
-                <option value=2>Hard (99 bombs)</option>
-                <option value=3>Glorified Russian Roulette (50% of tiles are bombs)</option>
-            </select>
-            <br/>
-            <label for="customBombCount">Custom bomb count:</label>
-            <input type="number" id="customBombCount">
-            <button onclick="start()">Start</button>
-        </div>
+        <div id="main">
+            <div id="options">
+                <table>
+                    <tr>
+                        <td>
+                            <label for="difficultyDropdown">Select Difficulty:</label>
+                        </td>
+                        <td>
+                            <select name="difficultySelect" id="difficultyDropdown">
+                                <option value=0>Easy (10 bombs)</option>
+                                <option value=1>Medium (40 bombs)</option>
+                                <option value=2>Hard (99 bombs)</option>
+                                <option value=3>Glorified Russian Roulette (50% of tiles are bombs)</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label for="customBombCount">Custom bomb count:</label></td>
+                        <td><input type="number" id="customBombCount"></td>
+                    </tr>
+                </table>
+                <br/>
+                
+                
+                <button onclick="start()">Start</button>
+            </div>
 
-        <div>
-            <div id="grid"></div>
-            <button id="debugButton" onclick="toggleDebugMode()"></button>
+            <div id="game">
+                <div id="grid"></div>
+                <button id="debugButton" onclick="toggleDebugMode()"></button>
+                <button style="padding-left:10px;" onclick="reset()">Reset</button>
+                
+            </div>
+            
+            
         </div>
-        <button onclick="reset()">Reset</button>
         <script src="minesweeper.js"></script>
     </body>
 </html>

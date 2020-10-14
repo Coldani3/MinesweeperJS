@@ -274,8 +274,6 @@ function generateButtons()
         settings.bombCount = customBombCountElement.text();
     }
 
-    console.log("settings width: ".concat(settings.width) );
-
     //insert appropriate number of DIVs
     let gridDiv = document.getElementById("grid");
 
@@ -310,10 +308,6 @@ function populateField(clickedX = -3, clickedY = -3)
         }
     }
 
-    minesweeperGrid.forEach(function(x) {
-        console.log(x);
-    })
-
     hasPopulated = true;
     onButtonClick(clickedX, clickedY);
 }
@@ -338,50 +332,51 @@ function onButtonClick(buttonX, buttonY)
 {
     let element = getLocationElement(buttonX, buttonY);
 
-    if (getLocationHasBomb(buttonX, buttonY))
+    if (!element.hasClass("revealedButton"))
     {
-        element.addClass("bomb");
-        element.addClass("revealedButton");
-        element.append("<img src='bomb.png' alt='B'>");
-        console.log("image loaded");
-        gameRunning = false;
-        //game over man
-        return;
-    }
-
-    //Search for bombs
-    let bombsFound = searchForBombs(buttonX, buttonY);
-
-    //Populate tiles with the appropriate number
-    element.addClass("rNumberSquare");
-
-    setNumberSquareVisible(buttonX, buttonY);
-
-    if (bombsFound == 0)
-    {
-        console.log("no bombs");
-        let toRevealAround = revealSquaresAroundPoint(buttonX, buttonY);
-        console.log(toRevealAround.length);
-
-        while (toRevealAround.length > 0)
+        if (getLocationHasBomb(buttonX, buttonY))
         {
-            for (square of toRevealAround)
+            element.addClass("bomb");
+            element.addClass("revealedButton");
+            element.append("<img src='bomb.png' alt='B'>");
+            gameRunning = false;
+            //game over man
+            return;
+        }
+
+        //Search for bombs
+        let bombsFound = searchForBombs(buttonX, buttonY);
+
+        //Populate tiles with the appropriate number
+        element.addClass("rNumberSquare");
+
+        setNumberSquareVisible(buttonX, buttonY);
+
+        if (bombsFound == 0)
+        {
+            let toRevealAround = revealSquaresAroundPoint(buttonX, buttonY);
+
+            while (toRevealAround.length > 0)
             {
-                let zeroSquares = revealSquaresAroundPoint(square.x, square.y);
-
-                for (zeroSquare of zeroSquares)
+                for (square of toRevealAround)
                 {
-                    toRevealAround.push(zeroSquare);
-                }
+                    let zeroSquares = revealSquaresAroundPoint(square.x, square.y);
 
-                toRevealAround = toRevealAround.filter(function(obj) { return obj.x != square.x || obj.y != square.y; });
+                    for (zeroSquare of zeroSquares)
+                    {
+                        toRevealAround.push(zeroSquare);
+                    }
+
+                    toRevealAround = toRevealAround.filter(function(obj) { return obj.x != square.x || obj.y != square.y; });
+                }
             }
         }
-    }
 
-    if (checkIfAllNonBombTilesFound())
-    {
-        //game win
+        if (checkIfAllNonBombTilesFound())
+        {
+            //game win
+            console.log("win");
+        }
     }
 }
 
@@ -426,6 +421,8 @@ function start()
             {
                 $("#debugButton").remove();
             }
+
+            $("#game").css("display", "block");
 
             generateButtons();
             $("#grid").width(buttonSize * settings.width);
