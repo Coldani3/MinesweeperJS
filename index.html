@@ -8,12 +8,14 @@
     </head>
     <body>
         <div>
+            <label for="difficultyDropdown">Select Difficulty:</label>
             <select name="difficultySelect" id="difficultyDropdown">
                 <option value=0>Easy (10 bombs)</option>
                 <option value=1>Medium (40 bombs)</option>
                 <option value=2>Hard (99 bombs)</option>
                 <option value=3>Glorified Russian Roulette (50% of tiles are bombs)</option>
             </select>
+            <br/>
             <label for="customBombCount">Custom bomb count:</label>
             <input type="number" id="customBombCount">
             <button onclick="start()">Start</button>

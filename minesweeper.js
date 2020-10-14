@@ -7,7 +7,8 @@ var settings = {
     height: 20,
     width: 20,
     //0 = easy, 1 = medium, etc.
-    difficulty: 0
+    difficulty: 0,
+    bombCount: 0
 };
 
 var hasPopulated = false;
@@ -18,12 +19,26 @@ var flaggedSquares = [];
 var gameRunning = true;
 var debug = false;
 const debugEnabled = true;
+var customBombCountElement;
 
 
 //---Getters---
 function getLocationHasBomb(gridX, gridY)
 {
     for (obj of minesweeperGrid)
+    {
+        if (obj.x == gridX && obj.y == gridY)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+function isFlagged(gridX, gridY)
+{
+    for (obj of flaggedSquares)
     {
         if (obj.x == gridX && obj.y == gridY)
         {
@@ -121,12 +136,22 @@ function clearBombsDebug()
         {
             element.text("");
             element.empty();
+
+            if (isFlagged(x.x, x.y))
+            {
+                displayFlag(x.x, x.y);
+            }
         }
     }
 }
 
 function toggleDebugMode()
 {
+    if (!hasPopulated)
+    {
+        populateField();
+    }
+
     if (started)
     {
         debug = !debug;
@@ -150,8 +175,9 @@ function reset()
         flaggedSquares = []
         $("#grid").empty();
         hasPopulated = false;
-        //generateButtons();
-        populateField();
+        generateButtons();
+        $("#grid").width(buttonSize * settings.width);
+        $("#grid").height(buttonSize * settings.height);
         gameRunning = true;
 
         if (debug)
@@ -209,6 +235,47 @@ function generateButtons()
 {
     //Get grid size
     //Calculate number of buttons that can fit on a row and in the whole grid
+    customBombCountElement = $("#customBombCount");
+
+    if (customBombCountElement.text().length == 0 && customBombCountElement.text() != "0")
+    {
+        switch (settings.difficulty)
+        {
+            default:
+                //default to easy
+                console.log("default: ".concat(settings.difficulty));
+            case 0:
+                settings.bombCount = 10;
+                settings.width = 9;
+                settings.height = 9;
+                break;
+
+            case 1:
+                settings.bombCount = 40;
+                settings.width = 16;
+                settings.height = 16;
+                break;
+
+            case 2:
+                settings.bombCount = 99;
+                settings.width = 30;
+                settings.height = 16;
+                break;
+            
+            case 3:
+                settings.width = 16;
+                settings.height = 16;
+                settings.bombCount = (settings.height * settings.width) / 2;
+                break;
+        }
+    }
+    else
+    {
+        settings.bombCount = customBombCountElement.text();
+    }
+
+    console.log("settings width: ".concat(settings.width) );
+
     //insert appropriate number of DIVs
     let gridDiv = document.getElementById("grid");
 
@@ -221,54 +288,15 @@ function generateButtons()
     }   
 }
 
-function populateField(clickedX = -1, clickedY = -1)
+function populateField(clickedX = -3, clickedY = -3)
 {
     //decide where the bombs are
-    let bombCount = 0;
-    let customBombCountElement = $("#customBombCount");
-
-    if (!customBombCountElement.text() == "")
-    {
-        switch (settings.difficulty)
-        {
-            default:
-                //default to easy
-            case 0:
-                bombCount = 10;
-                settings.width = 9;
-                settings.height = 9;
-                break;
-
-            case 1:
-                bombCount = 40;
-                settings.width = 16;
-                settings.height = 16;
-                break;
-
-            case 2:
-                bombCount = 99;
-                settings.width = 30;
-                settings.height = 16;
-                break;
-            
-            case 3:
-                settings.width = 16;
-                settings.height = 16;
-                bombCount = (settings.height * settings.width) / 2;
-                break;
-        }
-    }
-    else
-    {
-        bombCount = customBombCountElement.text();
-    }
-
-    for (i = 0; i < bombCount; i++)
+    for (let i = 0; i < settings.bombCount; i++)
     {
         let bombX = Math.floor(Math.random() * settings.width);
         let bombY = Math.floor(Math.random() * settings.height);
 
-        if (!getLocationHasBomb(bombX, bombY) && ((bombX != clickedX && bombY != clickedY) || settings.difficulty == 3))
+        if (!getLocationHasBomb(bombX, bombY) && ((bombX != clickedX && bombY != clickedY)))
         {
             minesweeperGrid.push({
                 x: bombX,
@@ -281,80 +309,100 @@ function populateField(clickedX = -1, clickedY = -1)
             continue;
         }
     }
+
+    minesweeperGrid.forEach(function(x) {
+        console.log(x);
+    })
+
+    hasPopulated = true;
+    onButtonClick(clickedX, clickedY);
 }
 
 //---Event based---
 function buttonClicked(buttonX, buttonY)
 {
-    console.log("press");
     if (gameRunning)
     {
         if (!hasPopulated)
         {
             populateField(buttonX, buttonY);
         }
-
-        let element = getLocationElement(buttonX, buttonY);
-
-        if (getLocationHasBomb(buttonX, buttonY))
+        else
         {
-            element.addClass("bomb");
-            element.addClass("revealedButton");
-            element.append("<img src='bomb.png' alt='B'>");
-            console.log("image loaded");
-            gameRunning = false;
-            //game over man
-            return;
-        }
-
-        //Search for bombs
-        let bombsFound = searchForBombs(buttonX, buttonY);
-
-        //Populate tiles with the appropriate number
-        element.addClass("rNumberSquare");
-
-        setNumberSquareVisible(buttonX, buttonY);
-
-        if (bombsFound == 0)
-        {
-            let toRevealAround = revealSquaresAroundPoint(buttonX, buttonY);
-
-            while (toRevealAround.length > 0)
-            {
-                for (square of toRevealAround)
-                {
-                    let zeroSquares = revealSquaresAroundPoint(square.x, square.y);
-
-                    for (zeroSquare of zeroSquares)
-                    {
-                        toRevealAround.push(zeroSquare);
-                    }
-
-                    toRevealAround = toRevealAround.filter(function(obj) { return obj.x != square.x || obj.y != square.y; });
-                }
-            }
-        }
-
-        if (checkIfAllNonBombTilesFound())
-        {
-            //game win
+            onButtonClick(buttonX, buttonY);
         }
     }
 }
 
+function onButtonClick(buttonX, buttonY)
+{
+    let element = getLocationElement(buttonX, buttonY);
+
+    if (getLocationHasBomb(buttonX, buttonY))
+    {
+        element.addClass("bomb");
+        element.addClass("revealedButton");
+        element.append("<img src='bomb.png' alt='B'>");
+        console.log("image loaded");
+        gameRunning = false;
+        //game over man
+        return;
+    }
+
+    //Search for bombs
+    let bombsFound = searchForBombs(buttonX, buttonY);
+
+    //Populate tiles with the appropriate number
+    element.addClass("rNumberSquare");
+
+    setNumberSquareVisible(buttonX, buttonY);
+
+    if (bombsFound == 0)
+    {
+        console.log("no bombs");
+        let toRevealAround = revealSquaresAroundPoint(buttonX, buttonY);
+        console.log(toRevealAround.length);
+
+        while (toRevealAround.length > 0)
+        {
+            for (square of toRevealAround)
+            {
+                let zeroSquares = revealSquaresAroundPoint(square.x, square.y);
+
+                for (zeroSquare of zeroSquares)
+                {
+                    toRevealAround.push(zeroSquare);
+                }
+
+                toRevealAround = toRevealAround.filter(function(obj) { return obj.x != square.x || obj.y != square.y; });
+            }
+        }
+    }
+
+    if (checkIfAllNonBombTilesFound())
+    {
+        //game win
+    }
+}
+
+function displayFlag(buttonX, buttonY)
+{
+    let element = getLocationElement(buttonX, buttonY);
+    element.addClass("revealedButton");
+    element.addClass("flag");
+    element.append("<img src='flag.png' alt='F'>");
+}
+
 function onRightClick(buttonX, buttonY)
 {
-    if (gameRunning)
+    if (gameRunning && !(getLocationElement(buttonX, buttonY).hasClass("flag")))
     {
         flaggedSquares.push({
             x: buttonX,
             y: buttonY,
         });
 
-        let element = getLocationElement(buttonX, buttonY);
-        element.addClass("revealedButton");
-        element.addClass("flag");
-        element.append("<img src='flag.png' alt='F'>");
+        displayFlag(buttonX, buttonY);
     }
     return false;
 }
@@ -362,27 +410,37 @@ function onRightClick(buttonX, buttonY)
 
 function start()
 {
-    let selectElement = document.getElementById("difficultyDropdown");
-
-    if (selectElement.selectedIndex > -1)
+    if (!started)
     {
-        let selectedDifficulty = selectElement.options[selectElement.selectedIndex].value;
+        let selectElement = document.getElementById("difficultyDropdown");
 
-        settings.difficulty = selectedDifficulty;
-
-        //Make the border of the game scale to fit the game area
-        $("#grid").width(buttonSize * settings.width);
-        $("#grid").height(buttonSize * settings.height);
-
-        if (!debugEnabled)
+        if (selectElement.selectedIndex > -1)
         {
-            $("#debugButton").remove();
+            let selectedDifficulty = selectElement.options[selectElement.selectedIndex].value;
+
+            settings.difficulty = Number(selectedDifficulty);
+
+            //Make the border of the game scale to fit the game area
+
+            if (!debugEnabled)
+            {
+                $("#debugButton").remove();
+            }
+
+            generateButtons();
+            $("#grid").width(buttonSize * settings.width);
+            $("#grid").height(buttonSize * settings.height);
+            //populateField();
+
+            started = true;
         }
-
-        generateButtons();
-        //populateField();
-
-        started = true;
+    }
+    else
+    {
+        let selectElement = document.getElementById("difficultyDropdown");
+        let selectedDifficulty = selectElement.options[selectElement.selectedIndex].value;
+        settings.difficulty = Number(selectedDifficulty);
+        reset();
     }
 }
 
