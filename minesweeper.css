@@ -83,3 +83,7 @@ body {
 .nightmodeText {
     color: white;
 }
+
+.debugHighlight {
+    background-color: pink;
+}

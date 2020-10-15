@@ -91,8 +91,23 @@ function searchForBombs(centreX, centreY)
 function checkIfAllNonBombTilesFound()
 {
     //assuming this is after a button press
-    let revealedCount = $(".revealedButton").length + $(".flag").length;
+    let revealedCount = $(".revealedButton").length;
     let maxCount = (settings.width * settings.height) - settings.bombCount;
+
+    /*if (revealedCount >= maxCount)
+    {
+        console.log("Revealed Count: ".concat(revealedCount, " Max Count: ", maxCount));
+        console.log(".revealedButton: ".concat($(".revealedButton").length, " .flag: ", $(".flag").length));
+
+        $(".revealedButton").each(function() { 
+            $(this).addClass("debugHighlight"); });
+        setTimeout(function() 
+        {
+            $(".debugHighlight").each(function() { 
+                //$(this).addClass(".revealedButton");
+                $(this).removeClass("debugHighlight"); });
+        }, 10000);
+    }*/
 
     return revealedCount >= maxCount;
 }
@@ -213,7 +228,10 @@ function revealSquaresAroundPoint(pointX, pointY)
 
                     if (!element.hasClass("revealedButton"))
                     {
-                        setNumberSquareVisible(currX, currY);
+                        if (!element.hasClass("flag"))
+                        {
+                            setNumberSquareVisible(currX, currY);
+                        }
 
                         if (searchForBombs(currX, currY) == 0)
                         {
@@ -382,6 +400,22 @@ function onButtonClick(buttonX, buttonY)
 
         if (checkIfAllNonBombTilesFound())
         {
+            minesweeperGrid.forEach(function(obj)
+            {
+                let element = getLocationElement(obj.x, obj.y);
+
+                if (!element.hasClass("flag"))
+                {
+                    element.empty();
+                    element.text("X");
+                }
+                else
+                {
+                    element.empty();
+                    element.append("<img src='bomb.png' alt='B'>");
+                }
+            });
+
             //game win
             console.log("win");
             gameRunning = false;
@@ -399,20 +433,30 @@ function displayFlag(buttonX, buttonY)
 
 function onRightClick(buttonX, buttonY)
 {
-    if (gameRunning && !(getLocationElement(buttonX, buttonY).hasClass("flag")))
+    if (gameRunning)
     {
-        flaggedSquares.push({
-            x: buttonX,
-            y: buttonY,
-        });
-
-        if (!debug)
+        if (!(getLocationElement(buttonX, buttonY).hasClass("flag")))
         {
-            displayFlag(buttonX, buttonY);
+            flaggedSquares.push({
+                x: buttonX,
+                y: buttonY,
+            });
+
+            if (!debug)
+            {
+                displayFlag(buttonX, buttonY);
+            }
+            else
+            {
+                getLocationElement(buttonX, buttonY).addClass("flag");
+            }
         }
         else
         {
-            getLocationElement(buttonX, buttonY).addClass("flag");
+            flaggedSquares = flaggedSquares.filter(function(obj) { obj.x != buttonX && obj.y != buttonY });
+            let element = getLocationElement(buttonX, buttonY);
+            element.removeClass("flag");
+            element.empty();
         }
     }
     return false;
