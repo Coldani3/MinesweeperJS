@@ -435,26 +435,29 @@ function onRightClick(buttonX, buttonY)
 {
     if (gameRunning)
     {
-        if (!(getLocationElement(buttonX, buttonY).hasClass("flag")))
+        let element = getLocationElement(buttonX, buttonY);
+        if (!(element.hasClass("flag")))
         {
-            flaggedSquares.push({
-                x: buttonX,
-                y: buttonY,
-            });
+            if (!element.hasClass("revealedButton"))
+            {
+                flaggedSquares.push({
+                    x: buttonX,
+                    y: buttonY,
+                });
 
-            if (!debug)
-            {
-                displayFlag(buttonX, buttonY);
-            }
-            else
-            {
-                getLocationElement(buttonX, buttonY).addClass("flag");
+                if (!debug)
+                {
+                    displayFlag(buttonX, buttonY);
+                }
+                else
+                {
+                    getLocationElement(buttonX, buttonY).addClass("flag");
+                }
             }
         }
         else
         {
             flaggedSquares = flaggedSquares.filter(function(obj) { obj.x != buttonX && obj.y != buttonY });
-            let element = getLocationElement(buttonX, buttonY);
             element.removeClass("flag");
             element.empty();
         }
