@@ -1,4 +1,3 @@
-//TODO: get user input via POST
 //TODO: scale button size based on specified grid size
 const buttonSize = 30;
 var started = false;
@@ -19,6 +18,7 @@ var flaggedSquares = [];
 var gameRunning = true;
 var debug = false;
 const debugEnabled = true;
+var nightModeActive = false;
 var customBombCountElement;
 
 
@@ -125,7 +125,7 @@ function setNumberSquareVisible(squareX, squareY)
 
     if (bombsFound > 0)
     {
-        element.append("<p>".concat(bombsFound, "</p>"));
+        element.append("<p class='coloredText'>".concat(bombsFound, "</p>"));
     }
 }
 
@@ -329,6 +329,31 @@ function populateField(clickedX = -3, clickedY = -3)
 
     hasPopulated = true;
     onButtonClick(clickedX, clickedY);
+}
+
+function toggleNightmode()
+{
+    console.log("toggle nightmode");
+    if (!nightModeActive)
+    {
+        console.log("nmode on");
+        $("p").filter(function() { return $("p", this).hasClass("colouredText");/*!this.hasClass("colouredText");*/ }).addClass("nightmodeText");
+        $("label").addClass("nightmodeText");
+        $("body").addClass("nightmodeMainBackground");
+        $("#options").addClass("nightmodeBackground");
+        $("#game").addClass("nightmodeBackground");
+
+        nightModeActive = true;
+    }
+    else
+    {
+        console.log("nmode off");
+        $(".nightmodeBackground").removeClass("nightmodeBackground");
+        $(".nightmodeMainBackground").removeClass("nightmodeMainBackground");
+        $(".nightmodeText").removeClass("nightmodeText");
+
+        nightModeActive = false;
+    }
 }
 
 //---Event based---

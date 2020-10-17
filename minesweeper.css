@@ -42,6 +42,10 @@ body {
 }
 
 #options {
+    
+}
+
+.optionsStyle {
     margin-top: 10px;
     margin-left: 10px;
     margin-bottom: 20px;
@@ -53,6 +57,10 @@ body {
 }
 
 #game {
+    
+}
+
+.gameStyle {
     margin-left: 10px;
     padding-top: 5px;
     padding-left: 10px;
@@ -72,18 +80,21 @@ body {
     align-items: center;
 }
 
+#nightmodeButton {
+    float: right;
+}
+
 .nightmodeMainBackground {
     background-color: #000;
 }
 
 .nightmodeBackground {
-    background-color: #021D36;
+    background-color: #2B2B2B;
 }
 
 .nightmodeText {
     color: white;
 }
 
-.debugHighlight {
-    background-color: pink;
-}
+/*Only here to remind me this is the class to mark something as not changed by night mode*/
+.colouredText {}

@@ -9,7 +9,9 @@
     </head>
     <body>
         <div id="main">
-            <div id="options">
+            <div id="options" class="optionsStyle">
+                <button id="nightmodeButton" onclick="toggleNightmode()">Enable/Disable Night Mode</button>
+                <br/>
                 <table>
                     <tr>
                         <td>
@@ -22,6 +24,7 @@
                                 <option value=2>Hard (99 bombs)</option>
                                 <option value=3>Glorified Russian Roulette (50% of tiles are bombs)</option>
                             </select>
+                            
                         </td>
                     </tr>
                     <tr>
@@ -35,7 +38,7 @@
                 <button onclick="start()">Start</button>
             </div>
 
-            <div id="game">
+            <div id="game" class="gameStyle">
                 <table>
                     <tr>
                         <td>
