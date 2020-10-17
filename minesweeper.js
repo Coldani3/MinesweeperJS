@@ -184,7 +184,6 @@ function reset()
             settings.width = Number(customRowElement.val());
             settings.height = Number(customColumnElement.val());
             customSizeDefined = true;
-            console.log("custom size time");
         }
         else
         {
@@ -307,7 +306,6 @@ function generateButtons()
 
     if (customBombCountElement.val().toString().length > 0 && customBombCountElement.val() > 0)
     {
-        console.log("custom bomb time");
         settings.bombCount = customBombCountElement.val();
     }
 
@@ -526,7 +524,6 @@ function start()
                 settings.width = Number(customRowElement.val());
                 settings.height = Number(customColumnElement.val());
                 customSizeDefined = true;
-                console.log("custom size time");
             }
             else
             {
