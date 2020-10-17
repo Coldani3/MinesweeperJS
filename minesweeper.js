@@ -94,21 +94,6 @@ function checkIfAllNonBombTilesFound()
     let revealedCount = $(".revealedButton").length;
     let maxCount = (settings.width * settings.height) - settings.bombCount;
 
-    /*if (revealedCount >= maxCount)
-    {
-        console.log("Revealed Count: ".concat(revealedCount, " Max Count: ", maxCount));
-        console.log(".revealedButton: ".concat($(".revealedButton").length, " .flag: ", $(".flag").length));
-
-        $(".revealedButton").each(function() { 
-            $(this).addClass("debugHighlight"); });
-        setTimeout(function() 
-        {
-            $(".debugHighlight").each(function() { 
-                //$(this).addClass(".revealedButton");
-                $(this).removeClass("debugHighlight"); });
-        }, 10000);
-    }*/
-
     return revealedCount >= maxCount;
 }
 
@@ -262,7 +247,6 @@ function generateButtons()
         {
             default:
                 //default to easy
-                console.log("default: ".concat(settings.difficulty));
             case 0:
                 settings.bombCount = 10;
                 settings.width = 9;
@@ -333,11 +317,9 @@ function populateField(clickedX = -3, clickedY = -3)
 
 function toggleNightmode()
 {
-    console.log("toggle nightmode");
     if (!nightModeActive)
     {
-        console.log("nmode on");
-        $("p").filter(function() { return $("p", this).hasClass("colouredText");/*!this.hasClass("colouredText");*/ }).addClass("nightmodeText");
+        $("p").filter(function() { return $("p", this).hasClass("colouredText"); }).addClass("nightmodeText");
         $("label").addClass("nightmodeText");
         $("body").addClass("nightmodeMainBackground");
         $("#options").addClass("nightmodeBackground");
@@ -347,7 +329,6 @@ function toggleNightmode()
     }
     else
     {
-        console.log("nmode off");
         $(".nightmodeBackground").removeClass("nightmodeBackground");
         $(".nightmodeMainBackground").removeClass("nightmodeMainBackground");
         $(".nightmodeText").removeClass("nightmodeText");
@@ -442,7 +423,6 @@ function onButtonClick(buttonX, buttonY)
             });
 
             //game win
-            console.log("win");
             gameRunning = false;
             setTimeout(function() { if (!gameRunning) reset()}, 4000);
         }
