@@ -37,12 +37,6 @@
 
 body {
     background-color: gainsboro;
-    /*height: 100%;
-    width: 100%;*/
-}
-
-#options {
-    
 }
 
 .optionsStyle {
@@ -54,10 +48,6 @@ body {
     border-width: 1px;
     border-color: black;
     background-color: white;
-}
-
-#game {
-    
 }
 
 .gameStyle {

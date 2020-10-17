@@ -2,6 +2,8 @@
 const buttonSize = 30;
 var started = false;
 
+var customSizeDefined = false;
+
 var settings = {
     height: 20,
     width: 20,
@@ -20,6 +22,8 @@ var debug = false;
 const debugEnabled = true;
 var nightModeActive = false;
 var customBombCountElement;
+var customRowElement;
+var customColumnElement;
 
 
 //---Getters---
@@ -174,6 +178,19 @@ function reset()
     {
         minesweeperGrid = []
         flaggedSquares = []
+
+        if (customRowElement.val().toString().length > 0 && customColumnElement.val().toString().length > 0)
+        {
+            settings.width = Number(customRowElement.val());
+            settings.height = Number(customColumnElement.val());
+            customSizeDefined = true;
+            console.log("custom size time");
+        }
+        else
+        {
+            customSizeDefined = false;
+        }
+
         $("#grid").empty();
         hasPopulated = false;
         generateButtons();
@@ -185,6 +202,8 @@ function reset()
         {
             showBombsDebug();
         }
+
+        debug = false;
     }
 }
 
@@ -241,40 +260,55 @@ function generateButtons()
     //Calculate number of buttons that can fit on a row and in the whole grid
     customBombCountElement = $("#customBombCount");
 
-    if (customBombCountElement.text().length == 0 && customBombCountElement.text() != "0")
+    switch (settings.difficulty)
     {
-        switch (settings.difficulty)
-        {
-            default:
-                //default to easy
-            case 0:
-                settings.bombCount = 10;
+        default:
+            //default to easy
+        case 0:
+            settings.bombCount = 10;
+
+            if (!customSizeDefined)
+            {
                 settings.width = 9;
                 settings.height = 9;
-                break;
+            }
+            break;
 
-            case 1:
-                settings.bombCount = 40;
+        case 1:
+            settings.bombCount = 40;
+            
+            if (!customSizeDefined)
+            {
                 settings.width = 16;
                 settings.height = 16;
-                break;
+            }
+            break;
 
-            case 2:
-                settings.bombCount = 99;
+        case 2:
+            settings.bombCount = 99;
+            
+            if (!customSizeDefined)
+            {
                 settings.width = 30;
                 settings.height = 16;
-                break;
-            
-            case 3:
+            }
+            break;
+        
+        case 3:
+            if (!customSizeDefined)
+            {
                 settings.width = 16;
                 settings.height = 16;
-                settings.bombCount = (settings.height * settings.width) / 2;
-                break;
-        }
+            }
+
+            settings.bombCount = (settings.height * settings.width) / 2;
+            break;
     }
-    else
+
+    if (customBombCountElement.val().toString().length > 0 && customBombCountElement.val() > 0)
     {
-        settings.bombCount = customBombCountElement.text();
+        console.log("custom bomb time");
+        settings.bombCount = customBombCountElement.val();
     }
 
     //insert appropriate number of DIVs
@@ -467,6 +501,7 @@ function onRightClick(buttonX, buttonY)
             element.empty();
         }
     }
+
     return false;
 }
 
@@ -482,6 +517,21 @@ function start()
             let selectedDifficulty = selectElement.options[selectElement.selectedIndex].value;
 
             settings.difficulty = Number(selectedDifficulty);
+
+            customRowElement = $("#customRowCount");
+            customColumnElement = $("#customColumnCount");
+
+            if (customRowElement.val().toString().length > 0 && customColumnElement.val().toString().length > 0)
+            {
+                settings.width = Number(customRowElement.val());
+                settings.height = Number(customColumnElement.val());
+                customSizeDefined = true;
+                console.log("custom size time");
+            }
+            else
+            {
+                customSizeDefined = false;
+            }
 
             //Make the border of the game scale to fit the game area
 
