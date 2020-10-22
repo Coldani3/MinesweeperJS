@@ -404,7 +404,7 @@ function onButtonClick(buttonX, buttonY)
             element.append("<img src='bomb.png' alt='B'>");
             gameRunning = false;
             //game over man
-            setTimeout(function() {if (!gameRunning) reset()}, 4000);
+            setTimeout(function() {if (!gameRunning) reset()}, 2000);
             return;
         }
 
@@ -456,7 +456,7 @@ function onButtonClick(buttonX, buttonY)
 
             //game win
             gameRunning = false;
-            setTimeout(function() { if (!gameRunning) reset()}, 4000);
+            //setTimeout(function() { if (!gameRunning) reset()}, 4000);
         }
     }
 }
@@ -504,6 +504,11 @@ function onRightClick(buttonX, buttonY)
 }
 
 
+function clamp(num, min, max)
+{
+    return num <= min ? min : num >= max ? max : num
+}
+
 function start()
 {
     if (!started)
@@ -521,8 +526,9 @@ function start()
 
             if (customRowElement.val().toString().length > 0 && customColumnElement.val().toString().length > 0)
             {
-                settings.width = Number(customRowElement.val());
-                settings.height = Number(customColumnElement.val());
+                //limit it to something reasonable until I can optimise the algorithm
+                settings.width = clamp(Number(customRowElement.val()), 0, 30);
+                settings.height = clamp(Number(customColumnElement.val()), 0, 30);
                 customSizeDefined = true;
             }
             else
