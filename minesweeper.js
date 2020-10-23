@@ -313,7 +313,6 @@ function generateButtons()
     let gridDiv = $("#grid");
 
     let htmlToAdd = "";
-    let timeStart = Date.now();
 
     for (i = 0; i < settings.height; i++)
     {
@@ -321,23 +320,9 @@ function generateButtons()
         {
             htmlToAdd += "<div class='button' id='".concat("b", i2, "-", i, "' onclick='buttonClicked(", i2, ", ", i, ")' oncontextmenu='onRightClick(", i2, ", ", i, "); return false;'> </button></div>");
         }
-        console.log("y: ".concat(i));
     }
 
     $(htmlToAdd).appendTo(gridDiv);
-
-    console.log(Date.now() - timeStart);
-/*
-    let gridDiv = document.getElementById("grid");
-
-    for (i = 0; i < settings.height; i++)
-    {
-        for (i2 = 0; i2 < settings.width; i2++)
-        {
-            gridDiv.innerHTML += "<div class='button' id='".concat("b", i2, "-", i, "' onclick='buttonClicked(", i2, ", ", i, ")' oncontextmenu='onRightClick(", i2, ", ", i, "); return false;'> </button>");
-        }
-    }   
-    */
 }
 
 function populateField(clickedX = -3, clickedY = -3)
