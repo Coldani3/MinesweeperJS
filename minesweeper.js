@@ -19,7 +19,7 @@ var minesweeperGrid = [];
 var flaggedSquares = [];
 var gameRunning = true;
 var debug = false;
-const debugEnabled = true;
+const debugEnabled = false;
 var nightModeActive = false;
 var customBombCountElement;
 var customRowElement;
@@ -310,6 +310,24 @@ function generateButtons()
     }
 
     //insert appropriate number of DIVs
+    let gridDiv = $("#grid");
+
+    let htmlToAdd = "";
+    let timeStart = Date.now();
+
+    for (i = 0; i < settings.height; i++)
+    {
+        for (i2 = 0; i2 < settings.width; i2++)
+        {
+            htmlToAdd += "<div class='button' id='".concat("b", i2, "-", i, "' onclick='buttonClicked(", i2, ", ", i, ")' oncontextmenu='onRightClick(", i2, ", ", i, "); return false;'> </button></div>");
+        }
+        console.log("y: ".concat(i));
+    }
+
+    $(htmlToAdd).appendTo(gridDiv);
+
+    console.log(Date.now() - timeStart);
+/*
     let gridDiv = document.getElementById("grid");
 
     for (i = 0; i < settings.height; i++)
@@ -319,6 +337,7 @@ function generateButtons()
             gridDiv.innerHTML += "<div class='button' id='".concat("b", i2, "-", i, "' onclick='buttonClicked(", i2, ", ", i, ")' oncontextmenu='onRightClick(", i2, ", ", i, "); return false;'> </button>");
         }
     }   
+    */
 }
 
 function populateField(clickedX = -3, clickedY = -3)
@@ -385,6 +404,32 @@ function buttonClicked(buttonX, buttonY)
     }
 }
 
+function validateGameWon()
+{
+    if (checkIfAllNonBombTilesFound())
+    {
+        minesweeperGrid.forEach(function(obj)
+        {
+            let element = getLocationElement(obj.x, obj.y);
+
+            if (!element.hasClass("flag"))
+            {
+                element.empty();
+                element.text("X");
+            }
+            else
+            {
+                element.empty();
+                element.append("<img src='bomb.png' alt='B'>");
+            }
+        });
+
+        //game win
+        gameRunning = false;
+        //setTimeout(function() { if (!gameRunning) reset()}, 4000);
+    }
+}
+
 function onButtonClick(buttonX, buttonY)
 {
     let element = getLocationElement(buttonX, buttonY);
@@ -436,28 +481,7 @@ function onButtonClick(buttonX, buttonY)
             }
         }
 
-        if (checkIfAllNonBombTilesFound())
-        {
-            minesweeperGrid.forEach(function(obj)
-            {
-                let element = getLocationElement(obj.x, obj.y);
-
-                if (!element.hasClass("flag"))
-                {
-                    element.empty();
-                    element.text("X");
-                }
-                else
-                {
-                    element.empty();
-                    element.append("<img src='bomb.png' alt='B'>");
-                }
-            });
-
-            //game win
-            gameRunning = false;
-            //setTimeout(function() { if (!gameRunning) reset()}, 4000);
-        }
+        validateGameWon();
     }
 }
 
@@ -498,6 +522,8 @@ function onRightClick(buttonX, buttonY)
             element.removeClass("flag");
             element.empty();
         }
+
+        validateGameWon();
     }
 
     return false;
