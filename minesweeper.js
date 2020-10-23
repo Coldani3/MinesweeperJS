@@ -252,11 +252,8 @@ function revealSquaresAroundPoint(pointX, pointY)
     return zeroSquares;
 }
 
-//---Setup---
-function generateButtons()
+function updateSettings()
 {
-    //Get grid size
-    //Calculate number of buttons that can fit on a row and in the whole grid
     customBombCountElement = $("#customBombCount");
 
     switch (settings.difficulty)
@@ -308,6 +305,15 @@ function generateButtons()
     {
         settings.bombCount = customBombCountElement.val();
     }
+}
+
+//---Setup---
+function generateButtons()
+{
+    //Get grid size
+    //Calculate number of buttons that can fit on a row and in the whole grid
+    
+    updateSettings();
 
     //insert appropriate number of DIVs
     let gridDiv = $("#grid");
@@ -411,7 +417,6 @@ function validateGameWon()
 
         //game win
         gameRunning = false;
-        //setTimeout(function() { if (!gameRunning) reset()}, 4000);
     }
 }
 
@@ -537,9 +542,8 @@ function start()
 
             if (customRowElement.val().toString().length > 0 && customColumnElement.val().toString().length > 0)
             {
-                //limit it to something reasonable until I can optimise the algorithm
-                settings.width = clamp(Number(customRowElement.val()), 0, 30);
-                settings.height = clamp(Number(customColumnElement.val()), 0, 30);
+                settings.width = customRowElement.val();
+                settings.height = customColumnElement.val();
                 customSizeDefined = true;
             }
             else
@@ -559,6 +563,8 @@ function start()
             generateButtons();
             $("#grid").width(buttonSize * settings.width);
             $("#grid").height(buttonSize * settings.height);
+            $("#game").height(buttonSize * settings.height + 50);
+            
 
             started = true;
         }
