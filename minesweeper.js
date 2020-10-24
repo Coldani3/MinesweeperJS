@@ -193,6 +193,7 @@ function reset()
         $("#grid").empty();
         hasPopulated = false;
         generateButtons();
+        $("#game").height(buttonSize * settings.height + 50);
         $("#grid").width(buttonSize * settings.width);
         $("#grid").height(buttonSize * settings.height);
         gameRunning = true;
@@ -561,9 +562,10 @@ function start()
             $("#game").css("display", "flex");
 
             generateButtons();
+            $("#game").height(buttonSize * settings.height + 50);
             $("#grid").width(buttonSize * settings.width);
             $("#grid").height(buttonSize * settings.height);
-            $("#game").height(buttonSize * settings.height + 50);
+            
             
 
             started = true;
