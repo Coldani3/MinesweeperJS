@@ -24,6 +24,7 @@ var nightModeActive = false;
 var customBombCountElement;
 var customRowElement;
 var customColumnElement;
+var flagCount = 0;
 
 
 //---Getters---
@@ -193,7 +194,7 @@ function reset()
         $("#grid").empty();
         hasPopulated = false;
         generateButtons();
-        $("#game").height(buttonSize * settings.height + 50);
+        $("#game").height(buttonSize * settings.height + 100);
         $("#grid").width(buttonSize * settings.width);
         $("#grid").height(buttonSize * settings.height);
         gameRunning = true;
@@ -330,6 +331,7 @@ function generateButtons()
     }
 
     $(htmlToAdd).appendTo(gridDiv);
+    $("#bombCount").text(settings.bombCount);
 }
 
 function populateField(clickedX = -3, clickedY = -3)
@@ -367,6 +369,7 @@ function toggleNightmode()
         $("body").addClass("nightmodeMainBackground");
         $("#options").addClass("nightmodeBackground");
         $("#game").addClass("nightmodeBackground");
+        $("span").addClass("nightmodeText");
 
         nightModeActive = true;
     }
@@ -483,6 +486,11 @@ function displayFlag(buttonX, buttonY)
     element.append("<img src='flag.png' alt='F'>");
 }
 
+function updateFlagCount()
+{
+    $("#flagCount").text(flagCount);
+}
+
 function onRightClick(buttonX, buttonY)
 {
     if (gameRunning)
@@ -505,6 +513,8 @@ function onRightClick(buttonX, buttonY)
                 {
                     getLocationElement(buttonX, buttonY).addClass("flag");
                 }
+
+                ++flagCount;
             }
         }
         else
@@ -512,8 +522,10 @@ function onRightClick(buttonX, buttonY)
             flaggedSquares = flaggedSquares.filter(function(obj) { obj.x != buttonX && obj.y != buttonY });
             element.removeClass("flag");
             element.empty();
+            --flagCount;
         }
 
+        updateFlagCount();
         validateGameWon();
     }
 
@@ -562,7 +574,7 @@ function start()
             $("#game").css("display", "flex");
 
             generateButtons();
-            $("#game").height(buttonSize * settings.height + 50);
+            $("#game").height(buttonSize * settings.height + 100);
             $("#grid").width(buttonSize * settings.width);
             $("#grid").height(buttonSize * settings.height);
             
