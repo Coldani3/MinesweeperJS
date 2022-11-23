@@ -179,6 +179,7 @@ function reset()
     {
         minesweeperGrid = []
         flaggedSquares = []
+        flagCount = 0;
 
         if (customRowElement.val().toString().length > 0 && customColumnElement.val().toString().length > 0)
         {
